@@ -8,6 +8,7 @@ import { defineConfig } from 'tsup';
 import type { Options } from 'tsup';
 
 export default defineConfig(async (): Promise<Options[]> => {
+  const NODE_ENV = process.env['NODE_ENV'] || 'development';
   const PACKAGE_DIR = (await findPackageDir(process.cwd()))!;
   const WORKSPACE_DIR = (await findWorkspaceDir(process.cwd()))!;
 
@@ -15,6 +16,8 @@ export default defineConfig(async (): Promise<Options[]> => {
 
   const SEED_IMAGE_DIR = path.resolve(WORKSPACE_DIR, './workspaces/server/seeds/images');
   const IMAGE_PATH_LIST = fs.readdirSync(SEED_IMAGE_DIR).map((file) => `/images/${file}`);
+
+  console.log(NODE_ENV);
 
   return [
     {
@@ -26,7 +29,7 @@ export default defineConfig(async (): Promise<Options[]> => {
       },
       env: {
         API_URL: '',
-        NODE_ENV: process.env['NODE_ENV'] || 'development',
+        NODE_ENV: NODE_ENV,
         PATH_LIST: IMAGE_PATH_LIST.join(',') || '',
       },
       esbuildOptions(options) {
@@ -54,14 +57,13 @@ export default defineConfig(async (): Promise<Options[]> => {
         '.wasm': 'binary',
       },
       metafile: true,
-      minify: false,
+      minify: true,
       outDir: OUTPUT_DIR,
       platform: 'browser',
       shims: true,
-      sourcemap: 'inline',
-      splitting: false,
-      target: ['chrome58', 'firefox57', 'safari11', 'edge18'],
-      treeshake: false,
+      splitting: true,
+      target: ['chrome123'],
+      treeshake: true,
     },
   ];
 });
